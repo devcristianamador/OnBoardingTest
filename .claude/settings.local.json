@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(export PATH=\"/c/nvm4w/nodejs:/c/Users/Itac/AppData/Roaming/npm:$PATH\")",
+      "Bash(npm install:*)"
+    ]
+  }
+}

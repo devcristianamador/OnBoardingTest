@@ -1,0 +1,23 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Angular (latest stable), PrimeNG, PrimeFlex, TypeScript, Karma + Jasmine
+  Domain: Banking branch management system (Davivienda)
+  Project code: DVLAB (for Jira references)
+  App location: frontend/
+  Conventions:
+    - Commits follow Davivienda Smart Commits: prefijo((PROYECTO-tarea) - HU(PROYECTO-hu)): description
+    - Branches follow Davivienda Smart Branches: feature/PROYECTO-N/name, bugfix/PROYECTO-N/name
+    - Branches are created from development (acts as integration)
+    - Unit tests are mandatory (Karma + Jasmine), following TDD and Davivienda testing standards
+    - All code and descriptions in English
+    - Data is stored in-memory (no backend)
+
+rules:
+  proposal:
+    - Include Jira task references (DVLAB-N) in the proposal
+    - Specify the branch name following Davivienda Smart Branches convention
+  tasks:
+    - Break tasks into chunks of max 2 hours
+    - Each task must include unit tests
+    - Reference the commit type (feat, fix, etc.) for each task
