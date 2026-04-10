@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { TableModule } from 'primeng/table';
@@ -27,6 +27,7 @@ import { BranchFormComponent } from './components/branch-form/branch-form.compon
     BrowserModule,
     BrowserAnimationsModule,
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     TableModule,
     ButtonModule,

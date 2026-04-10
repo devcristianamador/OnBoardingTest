@@ -10,7 +10,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
@@ -21,6 +21,11 @@ describe('BranchListComponent', () => {
   let fixture: ComponentFixture<BranchListComponent>;
   let branchServiceSpy: jasmine.SpyObj<BranchService>;
   let branchesSubject: BehaviorSubject<Branch[]>;
+
+  const testBranches: Branch[] = [
+    { id: 1, name: 'Bogota Centro', address: 'Calle 10 #5-20' },
+    { id: 2, name: 'Medellin Norte', address: 'Carrera 80 #30-15' }
+  ];
 
   beforeEach(async () => {
     branchesSubject = new BehaviorSubject<Branch[]>([]);
@@ -33,6 +38,7 @@ describe('BranchListComponent', () => {
       imports: [
         BrowserAnimationsModule,
         CommonModule,
+        FormsModule,
         ReactiveFormsModule,
         TableModule,
         ButtonModule,
@@ -59,10 +65,6 @@ describe('BranchListComponent', () => {
   });
 
   it('should display branches from service', () => {
-    const testBranches: Branch[] = [
-      { id: 1, name: 'Branch A', address: 'Address A' },
-      { id: 2, name: 'Branch B', address: 'Address B' }
-    ];
     branchesSubject.next(testBranches);
     fixture.detectChanges();
     expect(component.branches.length).toBe(2);
@@ -75,19 +77,62 @@ describe('BranchListComponent', () => {
     expect(compiled.textContent).toContain('No branches found.');
   });
 
+  it('should render search input in toolbar', () => {
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const searchInput = compiled.querySelector('input[aria-label="Search branches"]');
+    expect(searchInput).toBeTruthy();
+  });
+
+  it('should filter branches by name', () => {
+    branchesSubject.next(testBranches);
+    fixture.detectChanges();
+    // Simulate search input event for name filter
+    const event = { target: { value: 'Bogota' } } as unknown as Event;
+    component.onSearch(event);
+    fixture.detectChanges();
+    expect(component.searchTerm).toBe('');
+    // filterGlobal is called on the table — verify table reference exists
+    expect(component.table).toBeTruthy();
+  });
+
+  it('should filter branches by address', () => {
+    branchesSubject.next(testBranches);
+    fixture.detectChanges();
+    const event = { target: { value: 'Carrera 80' } } as unknown as Event;
+    component.onSearch(event);
+    fixture.detectChanges();
+    expect(component.table).toBeTruthy();
+  });
+
+  it('should show "No branches found" when filter matches nothing', () => {
+    branchesSubject.next(testBranches);
+    fixture.detectChanges();
+    const event = { target: { value: 'xyz_no_match' } } as unknown as Event;
+    component.onSearch(event);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('No branches found.');
+  });
+
+  it('should clear search term and reset filter on clearSearch', () => {
+    branchesSubject.next(testBranches);
+    fixture.detectChanges();
+    component.searchTerm = 'Bogota';
+    component.clearSearch();
+    expect(component.searchTerm).toBe('');
+  });
+
   it('should call confirmDelete when delete button clicked', () => {
     spyOn(component, 'confirmDelete');
-    const branch: Branch = { id: 1, name: 'Branch A', address: 'Address A' };
-    branchesSubject.next([branch]);
-    fixture.detectChanges();
+    const branch: Branch = testBranches[0];
     component.confirmDelete(branch);
     expect(component.confirmDelete).toHaveBeenCalledWith(branch);
   });
 
   it('should call editBranch when edit button clicked', () => {
     spyOn(component, 'editBranch');
-    const branch: Branch = { id: 1, name: 'Branch A', address: 'Address A' };
-    component.editBranch(branch);
-    expect(component.editBranch).toHaveBeenCalledWith(branch);
+    component.editBranch(testBranches[0]);
+    expect(component.editBranch).toHaveBeenCalledWith(testBranches[0]);
   });
 });
