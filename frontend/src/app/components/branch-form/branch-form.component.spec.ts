@@ -85,6 +85,16 @@ describe('BranchFormComponent', () => {
       expect(branchServiceSpy.update).toHaveBeenCalledWith(1, { name: 'New Name', address: 'New Address' });
       expect(component.visible).toBeFalse();
     });
+
+    it('should show validation errors when a required field is cleared during edit', () => {
+      // Bug: clearing a field during edit should show errors on save attempt
+      component.open({ id: 1, name: 'Branch A', address: 'Address A' });
+      component.form.patchValue({ name: '' });
+      component.onSave();
+      expect(component.form.get('name')?.touched).toBeTrue();
+      expect(component.form.get('name')?.invalid).toBeTrue();
+      expect(branchServiceSpy.update).not.toHaveBeenCalled();
+    });
   });
 
   describe('onCancel', () => {
