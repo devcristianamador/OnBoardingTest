@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Table } from 'primeng/table';
 import { BranchService } from '../../services/branch.service';
 import { Branch } from '../../models/branch.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -10,8 +11,10 @@ import { BranchFormComponent } from '../branch-form/branch-form.component';
 })
 export class BranchListComponent implements OnInit {
   @ViewChild('branchForm') branchForm!: BranchFormComponent;
+  @ViewChild('dt') table!: Table;
 
   branches: Branch[] = [];
+  searchTerm = '';
 
   constructor(
     private branchService: BranchService,
@@ -23,6 +26,16 @@ export class BranchListComponent implements OnInit {
     this.branchService.branches$.subscribe(branches => {
       this.branches = branches;
     });
+  }
+
+  onSearch(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.table.filterGlobal(value, 'contains');
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.table.filterGlobal('', 'contains');
   }
 
   openNew(): void {
